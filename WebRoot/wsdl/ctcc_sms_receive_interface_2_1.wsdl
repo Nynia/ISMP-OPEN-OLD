@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- July 14, 2005 -->
+<wsdl:definitions
+   name="ctcc_sms_receive_interface"
+   targetNamespace="http://www.chinatelecom.com.cn/wsdl/ctcc/sms/receive/v2_1/interface"
+   xmlns="http://schemas.xmlsoap.org/wsdl/"
+   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns:ctcc_sms_receive="http://www.chinatelecom.com.cn/wsdl/ctcc/sms/receive/v2_1/interface"
+   xmlns:ctcc_common_faults="http://www.chinatelecom.com.cn/wsdl/ctcc/common/v2_0/faults"
+   xmlns:ctcc_sms_xsd="http://www.chinatelecom.com.cn/schema/ctcc/sms/v2_1"
+   xmlns:ctcc_common_xsd="http://www.chinatelecom.com.cn/schema/ctcc/common/v2_1"
+   xmlns:ctcc_sms_receive_local_xsd="http://www.chinatelecom.com.cn/schema/ctcc/sms/receive/v2_1/local">
+
+   <wsdl:import namespace="http://www.chinatelecom.com.cn/wsdl/ctcc/common/v2_0/faults" location="ctcc_common_faults_2_0.wsdl"/>
+
+   <wsdl:types>
+      <xsd:schema elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.chinatelecom.com.cn/schema/ctcc/sms/receive/v2_1/local">
+         <xsd:import namespace="http://www.chinatelecom.com.cn/schema/ctcc/sms/v2_1" schemaLocation="ctcc_sms_types_2_1.xsd"/>
+         <xsd:import namespace="http://www.chinatelecom.com.cn/schema/ctcc/common/v2_1" schemaLocation="ctcc_common_types_2_1.xsd"/>
+
+         <xsd:element name="getReceivedSms" type="ctcc_sms_receive_local_xsd:getReceivedSms"/>
+         <xsd:complexType name="getReceivedSms">
+            <xsd:sequence>
+               <xsd:element name="registrationIdentifier" type="xsd:string"/>
+            </xsd:sequence>
+         </xsd:complexType>
+
+         <xsd:element name="getReceivedSmsResponse" type="ctcc_sms_receive_local_xsd:getReceivedSmsResponse"/>
+         <xsd:complexType name="getReceivedSmsResponse">
+            <xsd:sequence>
+               <xsd:element name="result" type="ctcc_sms_xsd:SmsMessage" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+         </xsd:complexType>
+      </xsd:schema>
+   </wsdl:types>
+
+   <wsdl:message name="ReceiveSms_getReceivedSmsRequest">
+      <wsdl:part name="parameters" element="ctcc_sms_receive_local_xsd:getReceivedSms"/>
+   </wsdl:message>
+
+   <wsdl:message name="ReceiveSms_getReceivedSmsResponse">
+      <wsdl:part name="result" element="ctcc_sms_receive_local_xsd:getReceivedSmsResponse"/>
+   </wsdl:message>
+
+   <wsdl:portType name="ReceiveSms">
+      <wsdl:operation name="getReceivedSms">
+         <wsdl:input message="ctcc_sms_receive:ReceiveSms_getReceivedSmsRequest"/>
+         <wsdl:output message="ctcc_sms_receive:ReceiveSms_getReceivedSmsResponse"/>
+         <wsdl:fault name="ServiceException" message="ctcc_common_faults:ServiceException"/>
+         <wsdl:fault name="PolicyException" message="ctcc_common_faults:PolicyException"/>
+      </wsdl:operation>
+   </wsdl:portType>
+</wsdl:definitions>

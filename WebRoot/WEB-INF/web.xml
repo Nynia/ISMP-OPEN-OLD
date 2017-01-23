@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>WEB-INF/applicationContext.xml</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
+	</listener>
+
+	<!-- webService -->
+	<servlet>
+		<description>JAX-WS endpoint - IsmpSpEngineService</description>
+		<display-name>IsmpSpEngineService</display-name>
+		<servlet-name>IsmpSpEngineService</servlet-name>
+		<servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
+		<display-name>SmsNotificationService</display-name>
+		<servlet-name>SmsNotificationService</servlet-name>
+		<servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>IsmpSpEngineService</servlet-name>
+		<url-pattern>/SmsNotification</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>SmsNotificationService</servlet-name>
+		<url-pattern>/IsmpSpEngine</url-pattern>
+	</servlet-mapping>
+
+	<!-- addByWHN -->
+	<servlet>
+		<servlet-name>SmsNotificationServlet</servlet-name>
+		<servlet-class>servlet.SmsNotificationServlet</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>SmsNotificationServlet</servlet-name>
+		<url-pattern>/smsNotificationServlet</url-pattern>
+	</servlet-mapping>
+
+	<!-- ========================ADMIN=========================== -->
+	<servlet>
+		<servlet-name>MPLoginServlet</servlet-name>
+		<servlet-class>admin.MPLoginServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPCPRegisterServlet</servlet-name>
+		<servlet-class>admin.MPCPRegisterServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPCreateCPAccount</servlet-name>
+		<servlet-class>admin.MPCreateCPAccount</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPCPList</servlet-name>
+		<servlet-class>admin.MPCPList</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPCPProList</servlet-name>
+		<servlet-class>admin.MPCPProList</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPVerifyCPServlet</servlet-name>
+		<servlet-class>admin.MPVerifyCPServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPUpdateCPInfoServlet</servlet-name>
+		<servlet-class>admin.MPUpdateCPInfoServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPUpdateProInfoServlet</servlet-name>
+		<servlet-class>admin.MPUpdateProInfoServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPDeleteProServlet</servlet-name>
+		<servlet-class>admin.MPDeleteProServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPCPNewProServlet</servlet-name>
+		<servlet-class>admin.MPCPNewProServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPQueryOutputServlet</servlet-name>
+		<servlet-class>admin.MPQueryOutputServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPQueryOrderServlet</servlet-name>
+		<servlet-class>admin.MPQueryOrderServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<servlet-name>MPCPQueryOutputServlet</servlet-name>
+		<servlet-class>admin.MPCPQueryOutputServlet</servlet-class>
+	</servlet>
+  <servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>servlet.LoginServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>QueryServlet</servlet-name>
+    <servlet-class>servlet.QueryServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>SpQueryServlet</servlet-name>
+    <servlet-class>servlet.SpQueryServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>SpQueryTelephoneServlet</servlet-name>
+    <servlet-class>servlet.SpQueryTelephoneServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>SpQueryDetailServlet</servlet-name>
+    <servlet-class>servlet.SpQueryDetailServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>ManagerQueryTelephoneServlet</servlet-name>
+    <servlet-class>servlet.ManagerQueryTelephoneServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>ModifyPwdServlet</servlet-name>
+    <servlet-class>servlet.ModifyPwdServlet</servlet-class>
+  </servlet>
+
+
+
+
+
+
+
+
+	<servlet-mapping>
+		<servlet-name>MPLoginServlet</servlet-name>
+		<url-pattern>/admin/login</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPCPRegisterServlet</servlet-name>
+		<url-pattern>/admin/cpregister</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPCreateCPAccount</servlet-name>
+		<url-pattern>/admin/createcpaccount</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPCPList</servlet-name>
+		<url-pattern>/admin/cplist</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPCPProList</servlet-name>
+		<url-pattern>/admin/prolist</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPVerifyCPServlet</servlet-name>
+		<url-pattern>/admin/verifycp</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPUpdateCPInfoServlet</servlet-name>
+		<url-pattern>/admin/updatecpinfo</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPUpdateProInfoServlet</servlet-name>
+		<url-pattern>/admin/updateproinfo</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPDeleteProServlet</servlet-name>
+		<url-pattern>/admin/deletepro</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPCPNewProServlet</servlet-name>
+		<url-pattern>/admin/newpro</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPQueryOutputServlet</servlet-name>
+		<url-pattern>/admin/queryoutput</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPQueryOrderServlet</servlet-name>
+		<url-pattern>/admin/queryorder</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MPCPQueryOutputServlet</servlet-name>
+		<url-pattern>/admin/querycpoutput</url-pattern>
+	</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/loginServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>QueryServlet</servlet-name>
+    <url-pattern>/queryServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SpQueryServlet</servlet-name>
+    <url-pattern>/spQueryServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SpQueryTelephoneServlet</servlet-name>
+    <url-pattern>/spQueryTelephoneServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SpQueryDetailServlet</servlet-name>
+    <url-pattern>/spQueryDetailServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ManagerQueryTelephoneServlet</servlet-name>
+    <url-pattern>/managerQueryTelephoneServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ModifyPwdServlet</servlet-name>
+    <url-pattern>/modifyPwdServlet</url-pattern>
+  </servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>

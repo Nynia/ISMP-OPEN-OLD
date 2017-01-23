@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:comm3="http://www.chinatelecom.com.cn/schema/ctcc/common/v2_1"
+	xmlns:sms7="http://www.chinatelecom.com.cn/schema/ctcc/sms/notification/v2_1/local">
+	<SOAP-ENV:Header>
+		<comm3:NotifySOAPHeader>
+			<spRevId>jyz</spRevId>
+			<spRevpassword>lljyz</spRevpassword>
+			<spId>11103730</spId>
+			<SAN>1065966100101</SAN>
+			<linkId>11031057230200390507</linkId>
+		</comm3:NotifySOAPHeader>
+	</SOAP-ENV:Header>
+	<SOAP-ENV:Body>
+		<sms7:notifySmsReception>
+			<sms7:registrationIdentifier></sms7:registrationIdentifier>
+			<sms7:message>
+				<message>myspdb#1353</message>
+				<senderAddress>tel:15370177932</senderAddress>
+				<smsServiceActivationNumber>tel:1065966100101
+				</smsServiceActivationNumber>
+			</sms7:message>
+		</sms7:notifySmsReception>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
