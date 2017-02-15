@@ -51,7 +51,7 @@ public class IsmpSpEngineImpl{
 		System.out.println("==========调用订购关系更新URL接口IsmpSpEngineImpl开始==========");
 		ApplicationContext context = new ClassPathXmlApplicationContext("com/chinatelecom/ismp/sp/jdbcContext.xml");
 		jdbcTemplate = (JdbcTemplate) context.getBean("jdbcTemplate");
-		
+
 		String userId = orderRelationUpdateNotifyReq.getUserID();
 		int opType = orderRelationUpdateNotifyReq.getOPType();
 		System.out.println("原始opType:"+opType);
@@ -121,7 +121,7 @@ public class IsmpSpEngineImpl{
 		System.out.println("查询参数结束...");
 
 		String correlator=(int) (Math.random() * 100) + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
-		
+
 		// 向CP上行用户请求
 		System.out.println("订购关系更新URL接口向CP上行用户请求开始...");
 		HttpClient client = new HttpClient();
@@ -183,86 +183,14 @@ public class IsmpSpEngineImpl{
 			}
 		}
 
-		// 向用户下行短信
-		System.out.println("订购关系更新URL接口向用户下行短信开始...");
-		// 设置参数address
-		URI[] addresses = new URI[1];
-		try {
-			addresses[0] = new org.apache.axis.types.URI("tel:+86" + userId);
-		} catch (MalformedURIException e1) {
-			e1.printStackTrace();
-			System.out.println("向用户下行短信发生异常！");
-		}
-		System.out.println("address:" + "tel:+86" + userId);
-		// 设置参数senderName
-		System.out.println("senderName:" + accessNum);
-		// 设置参数messages
-		String messages = jsonObject.getString("content");
-		System.out.println("messages:" + messages);
-		// 设置参数chargingObject
-		ChargingInformation charging = new ChargingInformation();
-		charging.setDescription(description);
-		charging.setAmount(new BigDecimal(1));
-		charging.setCurrency(price + "");
-		charging.setCode(code);
-		System.out.println("description:" + description);
-		System.out.println("amount:" + 1);
-		System.out.println("currency:" + price);
-		System.out.println("code:" + code);
-		// 设置参数simpleReference
-		SimpleReference receiptRequest = new SimpleReference();
-		try {
-			receiptRequest.setEndpoint(new org.apache.axis.types.URI(
-					"http://202.102.41.186:9250/ismp/SmsNotification?wsdl"));
-		} catch (MalformedURIException e1) {
-			e1.printStackTrace();
-			System.out.println("向用户下行短信发生异常！");
-		}
-		receiptRequest.setInterfaceName("SmsNotification");
-		receiptRequest.setCorrelator(correlator);
-		System.out.println("correlator:" + receiptRequest.getCorrelator());
+		MutliThread m = new MutliThread(userId,accessNum,description,price,code,spId,productId,correlator,jsonObject);
+		Thread t = new Thread(m);
+		t.start();
 
-		String SPID = spId; // SPID
-		String Token = "2wsx@WSX"; // 密钥
-		String ProductID = productId; // 产品编号 "21位的产品编号,1开头"
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MMddHHmmss");
-		Date nowtime = new Date();
-		String timeStamp = dateFormat.format(nowtime); // 当前时间
-		SOAPHeaderElement SoapHeader = new SOAPHeaderElement(
-				"http://www.chinatelecom.com.cn/schema/ctcc/common/v2_1",
-				"RequestSOAPHeader");
-		/* 设置SOAP Header */
-		String result = null;
-		try {
-			SoapHeader.addChildElement("spId").addTextNode(SPID);// SpID
-			SoapHeader.addChildElement("timeStamp").addTextNode(timeStamp);
-			SoapHeader.addChildElement("spPassword").addTextNode(
-					MD5.compile(SPID + Token + timeStamp).toUpperCase()); // MD5加密
-			SoapHeader.addChildElement("productId").addTextNode(ProductID);
-			SoapHeader.addChildElement("OA").addTextNode("tel:+86" + userId);
-			// SoapHeader.addChildElement("FA").addTextNode("tel:+86"+user_id);
-			SoapHeader.addChildElement("multicastMessaging").addTextNode(
-					"false"); // 是否群发
-			/* 初始化Web Service Client */
-			SendSmsServiceLocator ssl = new SendSmsServiceLocator();
-			SendSms sendSms = ssl.getSendSms(new java.net.URL(
-					"http://221.228.17.35:9081/SendSmsService"));
-			((SendSmsBindingStub) sendSms).setHeader(SoapHeader);
-			result = sendSms.sendSms(addresses, accessNum, charging, messages,
-					receiptRequest);
-			System.out.println("下行返回值result:" + result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("向用户下行短信发生异常！");
-			//return null;
-		} finally{
-			System.out.println("订购关系更新URL接口向用户下行短信结束...");
-		}
-		
 		//再次向user_order插入数据
 		System.out.println("向user_order表添加记录开始...");
 		sql="insert into user_order(user_id,ismp_product_id,access_num,op_type,stream_no,createtime,correlator,linkId) values(?,?,?,?,?,sysdate(),?,'')";
-		int row=jdbcTemplate.update(sql,userId,productId,accessNum,opType,streamNo,receiptRequest.getCorrelator());
+		int row=jdbcTemplate.update(sql,userId,productId,accessNum,opType,streamNo,correlator);
 		if (row >= 1) {
 			System.out.println("向user_order表添加记录成功！");
 		} else {
@@ -276,9 +204,113 @@ public class IsmpSpEngineImpl{
 		response.setStreamingNo(streamNo);
 		System.out.println("====================调用订购关系更新URL接口IsmpSpEngineImpl结束====================");
 		return response;
-		
 	}
-	
+	public class MutliThread implements Runnable{
+		private String userId;
+		private String accessNum;
+		private String description;
+		private int price;
+		private String code;
+		private String spId;
+		private String productId;
+		private String correlator;
+		private JSONObject jsonObject;
+		MutliThread(String userId,String accessNum,String description,int price,String code,String spId,String productId,String correlator,JSONObject jsonObject){
+			this.userId = userId;
+			this.accessNum = accessNum;
+			this.description = description;
+			this.price = price;
+			this.code = code;
+			this.spId = spId;
+			this.productId = productId;
+			this.correlator = correlator;
+			this.jsonObject = jsonObject;
+		}
+		public void run(){
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.println("userId:"+userId+";accessNum:"+accessNum+";spId:"+spId+";productId:"+productId+";correlatro:"+correlator);
+			//send message
+			// 向用户下行短信
+			System.out.println("订购关系更新URL接口向用户下行短信开始...");
+			// 设置参数address
+			URI[] addresses = new URI[1];
+			try {
+				addresses[0] = new org.apache.axis.types.URI("tel:+86" + userId);
+			} catch (MalformedURIException e1) {
+				e1.printStackTrace();
+				System.out.println("向用户下行短信发生异常！");
+			}
+			System.out.println("address:" + "tel:+86" + userId);
+			// 设置参数senderName
+			System.out.println("senderName:" + accessNum);
+			// 设置参数messages
+			String messages = jsonObject.getString("content");
+			System.out.println("messages:" + messages);
+			// 设置参数chargingObject
+			ChargingInformation charging = new ChargingInformation();
+			charging.setDescription(description);
+			charging.setAmount(new BigDecimal(1));
+			charging.setCurrency(price + "");
+			charging.setCode(code);
+			System.out.println("description:" + description);
+			System.out.println("amount:" + 1);
+			System.out.println("currency:" + price);
+			System.out.println("code:" + code);
+			// 设置参数simpleReference
+			SimpleReference receiptRequest = new SimpleReference();
+			try {
+				receiptRequest.setEndpoint(new org.apache.axis.types.URI(
+						"http://202.102.41.186:9250/ismp/SmsNotification?wsdl"));
+			} catch (MalformedURIException e1) {
+				e1.printStackTrace();
+				System.out.println("向用户下行短信发生异常！");
+			}
+			receiptRequest.setInterfaceName("SmsNotification");
+			receiptRequest.setCorrelator(correlator);
+			System.out.println("correlator:" + receiptRequest.getCorrelator());
+
+			String SPID = spId; // SPID
+			String Token = "2wsx@WSX"; // 密钥
+			String ProductID = productId; // 产品编号 "21位的产品编号,1开头"
+			SimpleDateFormat dateFormat = new SimpleDateFormat("MMddHHmmss");
+			Date nowtime = new Date();
+			String timeStamp = dateFormat.format(nowtime); // 当前时间
+			SOAPHeaderElement SoapHeader = new SOAPHeaderElement(
+					"http://www.chinatelecom.com.cn/schema/ctcc/common/v2_1",
+					"RequestSOAPHeader");
+		/* 设置SOAP Header */
+			String result = null;
+			try {
+				SoapHeader.addChildElement("spId").addTextNode(SPID);// SpID
+				SoapHeader.addChildElement("timeStamp").addTextNode(timeStamp);
+				SoapHeader.addChildElement("spPassword").addTextNode(
+						MD5.compile(SPID + Token + timeStamp).toUpperCase()); // MD5加密
+				SoapHeader.addChildElement("productId").addTextNode(ProductID);
+				SoapHeader.addChildElement("OA").addTextNode("tel:+86" + userId);
+				// SoapHeader.addChildElement("FA").addTextNode("tel:+86"+user_id);
+				SoapHeader.addChildElement("multicastMessaging").addTextNode(
+						"false"); // 是否群发
+			/* 初始化Web Service Client */
+				SendSmsServiceLocator ssl = new SendSmsServiceLocator();
+				SendSms sendSms = ssl.getSendSms(new java.net.URL(
+						"http://221.228.17.35:9081/SendSmsService"));
+				((SendSmsBindingStub) sendSms).setHeader(SoapHeader);
+				result = sendSms.sendSms(addresses, accessNum, charging, messages,
+						receiptRequest);
+				System.out.println("下行返回值result:" + result);
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("向用户下行短信发生异常！");
+				//return null;
+			} finally{
+				System.out.println("订购关系更新URL接口向用户下行短信结束...");
+			}
+		}
+	}
 	public Response spWithdrawSubscription(
 			SPWithdrawSubscriptionReq spWithdrawSubscriptionReqPara) {
 		// TODO Auto-generated method stub
